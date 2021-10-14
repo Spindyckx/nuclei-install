@@ -1,0 +1,27 @@
+- name: make sure make is installed
+  become: true
+  hosts: nuclei7
+  tasks: 
+    - package:
+        name: make
+        state: present
+
+- name: install go
+  hosts: nuclei7
+  roles: 
+    - role:  ~/ansible/roles/andrewrothstein.go
+
+- name: install nuclei itself
+  hosts: nuclei7
+  tasks:
+    - shell: GO111MODULE=on go get -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei
+    
+- name: make nuclei executable from shell
+  hosts: nuclei7
+  become: true
+  tasks:
+    - copy:
+        src: /home/robin/go/bin/nuclei
+        dest: /usr/local/bin/
+        remote_src: yes
+        mode: 0755
